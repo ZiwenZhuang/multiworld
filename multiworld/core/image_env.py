@@ -239,8 +239,8 @@ class ImageEnv(ProxyEnv, MultitaskEnv):
         return goals
 
     def compute_rewards(self, actions, obs):
-        achieved_goals = obs['achieved_goal']
-        desired_goals = obs['desired_goal']
+        achieved_goals = obs['image_achieved_goal']
+        desired_goals = obs['image_desired_goal']
         dist = np.linalg.norm(achieved_goals - desired_goals, axis=1)
         if self.reward_type=='image_distance':
             return -dist
