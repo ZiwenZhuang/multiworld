@@ -21,6 +21,7 @@ class ImageEnv(ProxyEnv, MultitaskEnv):
             transpose=False,
             grayscale=False,
             normalize=False,
+            depth=False,
             reward_type='wrapped_env',
             threshold=10,
             image_length=None,
@@ -58,14 +59,14 @@ class ImageEnv(ProxyEnv, MultitaskEnv):
         self.recompute_reward = recompute_reward
         self.non_presampled_goal_img_is_garbage = non_presampled_goal_img_is_garbage
 
+        self.channels = 4 if depth else (1 if grayscale else 3)
         if image_length is not None:
             self.image_length = image_length
         else:
             if grayscale:
                 self.image_length = self.imsize * self.imsize
             else:
-                self.image_length = 3 * self.imsize * self.imsize
-        self.channels = 1 if grayscale else 3
+                self.image_length = self.channels * self.imsize * self.imsize
 
         # This is torch format rather than PIL image
         self.image_shape = (self.imsize, self.imsize)
