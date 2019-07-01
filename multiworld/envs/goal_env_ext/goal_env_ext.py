@@ -69,7 +69,7 @@ class GoalEnvExt(GoalEnv):
         self.default_camera_name = default_camera_name
         self._set_camera()
         self.sim.render(camera_name=default_camera_name, width=self.image_size, height=self.image_size, depth=False,
-                        mode='window')
+                        mode='offscreen')
 
         self.use_auxiliary_loss = use_auxiliary_loss
         self.action_space = spaces.Box(-1., 1., shape=(n_actions,), dtype='float32')
