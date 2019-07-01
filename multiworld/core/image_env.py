@@ -21,13 +21,13 @@ class ImageEnv(ProxyEnv, MultitaskEnv):
             transpose=False,
             grayscale=False,
             normalize=False,
-            depth=False,
             reward_type='wrapped_env',
             threshold=10,
             image_length=None,
             presampled_goals=None,
             non_presampled_goal_img_is_garbage=False,
             recompute_reward=True,
+            depth=False,
     ):
         """
 
