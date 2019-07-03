@@ -38,7 +38,7 @@ def register_rope_envs():
         entry_point='multiworld.envs.goal_env_ext.fetch.reach:FetchReachEnv',
         kwargs= {
                 'distance_threshold_obs': 0.0,
-                'horizon': 50,
+                'horizon': 100,
                 'image_size': 48,
                 'noisy_reward_fn': None,
                 'noisy_reward_fp': None,
@@ -55,7 +55,7 @@ def register_rope_envs():
         id='Reacher-v0',
         entry_point='multiworld.envs.goal_env_ext.reacher.reacher_env:ReacherEnv',
         kwargs= {
-                'horizon': 50,
+                'horizon': 100,
                 'n_substeps': 10,
                 'action_type': 'velocity',
                 'image_size': 48,

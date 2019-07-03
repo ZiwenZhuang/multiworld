@@ -12,7 +12,7 @@ import mujoco_py
 class ReacherEnv(GoalEnvExt, utils.EzPickle):
     def __init__(self, model_path='./reacher/reacher.xml', distance_threshold=1e-2, distance_threshold_obs=0,
                  n_substeps=10,
-                 horizon=50, image_size=100, action_type='velocity',
+                 horizon=50, image_size=48, action_type='velocity',
                  with_goal=False,
                  use_visual_observation=True,
                  use_image_goal=True,
@@ -147,7 +147,19 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
             @args: 'goal': must be a numpy array (not matrix)
         '''
         self.goal_state = goal['state_desired_goal']
-        self._reset_sim()
+        
+        # It should be similar to reset the environment
+        qpos = self.np_random.uniform(low=-2 * np.pi, high=2 * np.pi, size=self.model.nq)
+        qpos[-2:] = self.goal_state
+        qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
+        qvel[-2:] = 0
+        self.set_state(qpos, qvel)
+        self.goal_observation = self.render(mode='rgb_array', depth=False)
+        qpos = self.np_random.uniform(low=-0.1, high=0.1, size=self.model.nq) + self.init_qpos
+        qpos[-2:] = self.goal_state
+        qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
+        qvel[-2:] = 0
+        self.set_state(qpos, qvel)
 
     def set_goal(self, goal):
         '''
