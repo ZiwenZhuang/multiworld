@@ -1,7 +1,10 @@
 from gym import utils
-from envs.goal_env_ext.goal_env_ext import GoalEnvExt
+from multiworld.envs.goal_env_ext.goal_env_ext import GoalEnvExt
+from multiworld.envs.env_util import get_stat_in_paths, \
+    create_stats_ordered_dict, get_asset_full_path
 
 import os
+from collections import OrderedDict
 import numpy as np
 import mujoco_py
 
@@ -125,3 +128,76 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
             if np.linalg.norm(goal) < 2:
                 break
         return goal
+
+
+# Start Adding interface for multiworld environment collection
+
+    def get_goal(self):
+        ''' Get goal that are stored currently in this object.
+            (refering to the rlkit interface, provide what it need...)
+        '''
+        return {
+            'desired_goal': self.goal_state,
+            'state_desired_goal': self.goal_state,
+        }
+
+    def set_to_goal(self, goal):
+        ''' @brief: Set the goal which stores in this object and move the object to
+                    the position by the given goal.
+            @args: 'goal': must be a numpy array (not matrix)
+        '''
+        self.goal_state = goal['state_desired_goal']
+        self._reset_sim()
+
+    def set_goal(self, goal):
+        '''
+        '''
+        return self.set_to_goal(goal)
+
+    def get_image(self, width=84, height=84, camera_name=None):
+        assert width == height
+        return self.render(mode='rgb_array', image_size=width, depth=False)
+
+    def get_diagnostics(self, paths, prefix=''):
+        statistics = OrderedDict()
+        # for stat_name in [
+        #     'touch_distance',
+        #     'hand_success',
+        #     'obj_success',
+        #     'hand_and_obj_success',
+        #     'touch_success',
+        #     'hand_distance',
+        #     'obj_distance',
+        #     'hand_and_obj_distance',
+        #     'total_pickups',
+        # ]: # these are copied from saywer_pickup_and_place.py
+        for stat_name in [
+            'ag_state', 'g_state', 'image_dist', 'image_success',
+        ]:
+            stat_name = stat_name
+            stat = get_stat_in_paths(paths, 'env_infos', stat_name)
+            statistics.update(create_stats_ordered_dict(
+                '%s%s' % (prefix, stat_name),
+                stat,
+                always_show_all_stats=True,
+            ))
+            statistics.update(create_stats_ordered_dict(
+                'Final %s%s' % (prefix, stat_name),
+                [s[-1] for s in stat],
+                always_show_all_stats=True,
+            ))
+        return statistics
+
+    def _set_env_state(self, state):
+        ''' According to multiworld, there is a base class. 
+            But this is roughly already the base class along the inheritance chain.
+            I put the implementation here.
+        '''
+        joint_state, mocap_state = state
+        self.sim.set_state(joint_state)
+        # mocap_pos, mocap_quat = mocap_state
+        # self.data.set_mocap_pos('body0', mocap_pos) # It seems it has no mocap in use
+        # self.data.set_mocap_quat('body0', mocap_quat)
+        self.sim.forward()
+
+# End   Adding interface for multiworld environment collection

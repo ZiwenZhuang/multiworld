@@ -321,4 +321,16 @@ class FetchEnv(GoalEnvExt):
             ))
         return statistics
 
+    def _set_env_state(self, state):
+        ''' According to multiworld, there is a base class. 
+            But this is roughly already the base class along the inheritance chain.
+            I put the implementation here.
+        '''
+        joint_state, mocap_state = state
+        self.sim.set_state(joint_state)
+        mocap_pos, mocap_quat = mocap_state
+        self.data.set_mocap_pos('robot0:mocap', mocap_pos)
+        self.data.set_mocap_quat('robot0:mocap', mocap_quat)
+        self.sim.forward()
+
 # End   Adding interface for multiworld environment collection

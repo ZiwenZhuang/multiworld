@@ -51,4 +51,19 @@ def register_rope_envs():
                 'with_goal': False
             }, # copied from baselines_hrl (Xingyu)
     )
+    register(
+        id='Reacher-v0',
+        entry_point='multiworld.envs.goal_env_ext.reacher.reacher_env:ReacherEnv',
+        kwargs= {
+                'horizon': 50,
+                'n_substeps': 10,
+                'action_type': 'velocity',
+                'image_size': 48,
+                'distance_threshold': 1e-2,
+                'distance_threshold_obs': 0.,
+                'with_goal': False,
+                'use_image_goal': True,
+                'use_visual_observation': True
+            }, # copied from baselines_hrl (Xingyu)
+    )
 
