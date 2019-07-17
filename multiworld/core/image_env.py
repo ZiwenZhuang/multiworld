@@ -248,6 +248,9 @@ class ImageEnv(ProxyEnv, MultitaskEnv):
             return -dist
         elif self.reward_type=='image_sparse':
             return -(dist > self.threshold).astype(float)
+        elif self.reward_type == 'image_indicator':
+            indicator = (dist == 0)
+            return (np.ones(indicator.shape) * 0.5 - indicator) * 2
         elif self.reward_type=='wrapped_env':
             return self.wrapped_env.compute_rewards(actions, obs)
         else:
