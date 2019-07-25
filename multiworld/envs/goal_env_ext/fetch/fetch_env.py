@@ -138,6 +138,7 @@ class FetchEnv(GoalEnvExt):
             'obs_state': obs.copy(),
             'ag_state': achieved_goal.copy(),
             'g_state': self.goal_state.copy(),
+            'dist2g_state': goal_distance(achieved_goal, self.goal_state),
         }
 
     def _viewer_setup(self):

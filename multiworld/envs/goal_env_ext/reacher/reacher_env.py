@@ -78,9 +78,12 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
         """
         :return: The true current state, 'ag_state', and goal state, 'g_state'
         """
+        ag_state = self.get_end_effector_location().copy()
+        g_state = self.get_goal_location().copy()
         info = {
-            'ag_state': self.get_end_effector_location().copy(),
-            'g_state': self.get_goal_location().copy()
+            'ag_state': ag_state,
+            'g_state': g_state,
+            'effector2goal_distance': np.linalg.norm(ag_state - g_state)
         }
         return info
 
