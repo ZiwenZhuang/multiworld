@@ -95,7 +95,7 @@ class FetchEnv(GoalEnvExt):
         if self.use_image_goal:
             assert self.use_visual_observation
             ag = obs.copy()
-            g = self.goal_observation
+            g = self.goal_observation.transpose()
         else:
             ag = info['ag_state']
             g = info['g_state']
