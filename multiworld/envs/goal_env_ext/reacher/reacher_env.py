@@ -62,7 +62,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
                 self.get_end_effector_location() - self.get_goal_location()
             ])
         if self.use_image_goal:
-            desired_goal = self.goal_observation
+            desired_goal = self.goal_observation.transpose()
             achieved_goal = obs
         else:
             desired_goal = self.get_goal_location()
@@ -171,7 +171,8 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
 
     def get_image(self, width=84, height=84, camera_name=None):
         assert width == height
-        return self.render(mode='rgb_array', image_size=width, depth=False)
+        image = self.render(mode='rgb_array', image_size=width, depth=False)
+        return image
 
     def get_diagnostics(self, paths, prefix=''):
         statistics = OrderedDict()
