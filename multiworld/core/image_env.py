@@ -218,8 +218,10 @@ class ImageEnv(ProxyEnv, MultitaskEnv):
         self._img_goal = goal['image_desired_goal']
         self.wrapped_env.set_goal(goal)
 
-    def sample_goals(self, batch_size):
-        if self.num_goals_presampled > 0:
+    def sample_goals(self, batch_size, 
+            through_env= False, # This is a hacking argument that let the testing script get goals from environment
+            ):
+        if not through_env and self.num_goals_presampled > 0:
             idx = np.random.randint(0, self.num_goals_presampled, batch_size)
             sampled_goals = {
                 k: v[idx] for k, v in self._presampled_goals.items()

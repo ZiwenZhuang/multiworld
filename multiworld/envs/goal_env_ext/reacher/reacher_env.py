@@ -31,12 +31,13 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
     # ----------------------------
 
     def _reset_sim(self):
-        # Sample goal and render image
+        # Sample goal and render goal state image
         qpos = self.np_random.uniform(low=-2 * np.pi, high=2 * np.pi, size=self.model.nq)
         self.set_state(qpos, qvel=self.init_qvel)
         self.goal_state = self.get_end_effector_location()
 
         qpos[-2:] = self.goal_state
+        qpos[:2] = self.goal_state
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
         qvel[-2:] = 0
         self.set_state(qpos, qvel)
@@ -51,7 +52,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
 
     def _get_obs(self):
         if self.use_visual_observation:
-            obs = self.render(mode='rgb_array', depth=False)
+            obs = self.render(mode='rgb_array', depth=False).transpose()
         else:
             theta = self.sim.data.qpos.flat[:2]
             obs = np.concatenate([
@@ -62,7 +63,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
                 self.get_end_effector_location() - self.get_goal_location()
             ])
         if self.use_image_goal:
-            desired_goal = self.goal_observation.transpose()
+            desired_goal = self.goal_observation.transpose() if (self.goal_observation.shape[0] == 3 or self.goal_observation.shape[0] == 4) else self.goal_observation
             achieved_goal = obs
         else:
             desired_goal = self.get_goal_location()
@@ -135,6 +136,9 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
 
 # Start Adding interface for multiworld environment collection
 
+    def _sample_goal_state(self):
+        return self._sample_goal()
+
     def get_goal(self):
         ''' Get goal that are stored currently in this object.
             (refering to the rlkit interface, provide what it need...)
@@ -151,6 +155,25 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
         '''
         self.goal_state = goal['state_desired_goal']
         
+        # move the end effector to the goal
+        qpos = self.np_random.uniform(low=-2 * np.pi, high=2 * np.pi, size=self.model.nq)
+        # debug code
+        qpos[-2:] = np.array([0.002, 0.004])
+        qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
+        qvel[-2:] = 0
+        self.set_state(qpos, qvel)
+        self.goal_observation = self.render(mode='rgb_array', depth=False).transpose()
+        qpos = self.np_random.uniform(low=-0.1, high=0.1, size=self.model.nq) + self.init_qpos
+        qpos[-2:] = self.goal_state
+        qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
+        qvel[-2:] = 0
+        self.set_state(qpos, qvel)
+
+    def set_goal(self, goal):
+        ''' And randomize the state
+        '''
+        self.goal_state = goal['state_desired_goal']
+        
         # It should be similar to reset the environment
         qpos = self.np_random.uniform(low=-2 * np.pi, high=2 * np.pi, size=self.model.nq)
         qpos[-2:] = self.goal_state
@@ -163,11 +186,6 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
         qvel[-2:] = 0
         self.set_state(qpos, qvel)
-
-    def set_goal(self, goal):
-        '''
-        '''
-        return self.set_to_goal(goal)
 
     def get_image(self, width=84, height=84, camera_name=None):
         assert width == height
