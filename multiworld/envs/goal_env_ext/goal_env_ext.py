@@ -350,7 +350,8 @@ class GoalEnvExt(GoalEnv):
         if image_size is None:
             image_size = self.image_size
         if mode == 'rgb_array':
-            self.sim.render_contexts[0]._set_mujoco_buffers()
+            # could be a bug code
+            # self.sim.render_contexts[0]._set_mujoco_buffers()
             if depth:
                 image, depth = self.sim.render(camera_name=camera_name, width=image_size, height=image_size, depth=True)
                 # id = self.sim.model.camera_name2id('external_camera_0')
@@ -441,5 +442,22 @@ class GoalEnvExt(GoalEnv):
         self._set_env_state(base_state) # from the child class
         self.goal_state = goal
         self._reset_sim()
+
+    def sample_goals(self, num_batches):
+        ''' Return a dict with each batch of goals.
+            The dict includes keys: 'desired_goal', 'state_desired_goal'
+        '''
+        desired_goal = []
+        state_desired_goal = []
+        for _ in range(num_batches):
+            goal = self._sample_goal_state()
+            desired_goal.append(goal)
+            state_desired_goal.append(goal)
+
+        # form it as a dict and return
+        return dict(
+            desired_goal= desired_goal,
+            state_desired_goal= state_desired_goal,
+        )
 
 # End   Adding interface for multiworld environment collection

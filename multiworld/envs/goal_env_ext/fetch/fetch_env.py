@@ -88,7 +88,7 @@ class FetchEnv(GoalEnvExt):
         # positions
         info = self.get_current_info()
         if self.use_visual_observation:
-            obs = self.render(mode='rgb_array', depth=True)
+            obs = self.render(mode='rgb_array', depth=True).transpose()
         else:
             obs = info['obs_state']
 
@@ -187,15 +187,15 @@ class FetchEnv(GoalEnvExt):
             self.sim.data.set_joint_qpos('object0:joint', object_qpos)
             self.sim.forward()
             self.sim.data.set_mocap_pos('robot0:mocap', self.sim.data.get_site_xpos('robot0:grip'))
-            self.goal_observation = self.render(mode='rgb_array', depth=True)
-            self.goal_observation = self.render(mode='rgb_array', depth=True)
+            self.goal_observation = self.render(mode='rgb_array', depth=True).transpose()
+            self.goal_observation = self.render(mode='rgb_array', depth=True).transpose()
             object_qpos[:3] = self.sim.data.get_site_xpos('robot0:grip')
             self.sim.data.set_joint_qpos('object0:joint', object_qpos)# making start position of object same as gripper to limit exploration
         else:
             goal_gripper_target = self.goal_state
             goal_gripper_rotation = np.array([1., 0., 1., 0.])
             self._move_gripper(goal_gripper_target, goal_gripper_rotation)
-            self.goal_observation = self.render(mode='rgb_array', depth=True)
+            self.goal_observation = self.render(mode='rgb_array', depth=True).transpose()
             # Set back
             self.sim.set_state(self.initial_state)
         self.sim.forward()
@@ -289,7 +289,7 @@ class FetchEnv(GoalEnvExt):
 
     def get_image(self, width=84, height=84, camera_name=None):
         assert width == height
-        return self.render(mode='rgb_array', image_size=width)
+        return self.render(mode='rgb_array', image_size=width).transpose()
 
     def get_diagnostics(self, paths, prefix=''):
         statistics = OrderedDict()

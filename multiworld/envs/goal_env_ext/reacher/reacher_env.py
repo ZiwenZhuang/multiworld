@@ -41,7 +41,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
         qvel[-2:] = 0
         self.set_state(qpos, qvel)
-        self.goal_observation = self.render(mode='rgb_array', depth=False)
+        self.goal_observation = self.render(mode='rgb_array', depth=False).transpose()
         qpos = self.np_random.uniform(low=-0.1, high=0.1, size=self.model.nq) + self.init_qpos
         qpos[-2:] = self.goal_state
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
@@ -157,8 +157,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
         
         # move the end effector to the goal
         qpos = self.np_random.uniform(low=-2 * np.pi, high=2 * np.pi, size=self.model.nq)
-        # debug code
-        qpos[-2:] = np.array([0.002, 0.004])
+        qpos[-2:] = self.goal_state
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
         qvel[-2:] = 0
         self.set_state(qpos, qvel)
@@ -180,7 +179,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
         qvel[-2:] = 0
         self.set_state(qpos, qvel)
-        self.goal_observation = self.render(mode='rgb_array', depth=False)
+        self.goal_observation = self.render(mode='rgb_array', depth=False).transpose()
         qpos = self.np_random.uniform(low=-0.1, high=0.1, size=self.model.nq) + self.init_qpos
         qpos[-2:] = self.goal_state
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
@@ -189,7 +188,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
 
     def get_image(self, width=84, height=84, camera_name=None):
         assert width == height
-        image = self.render(mode='rgb_array', image_size=width, depth=False)
+        image = self.render(mode='rgb_array', image_size=width, depth=False).transpose()
         return image
 
     def get_diagnostics(self, paths, prefix=''):
