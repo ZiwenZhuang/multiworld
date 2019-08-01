@@ -41,7 +41,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
         qvel[-2:] = 0
         self.set_state(qpos, qvel)
-        self.goal_observation = self.render(mode='rgb_array', depth=False).transpose()
+        self.goal_observation = self.render(mode='rgb_array', depth=False)
         qpos = self.np_random.uniform(low=-0.1, high=0.1, size=self.model.nq) + self.init_qpos
         qpos[-2:] = self.goal_state
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
@@ -63,7 +63,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
                 self.get_end_effector_location() - self.get_goal_location()
             ])
         if self.use_image_goal:
-            desired_goal = self.goal_observation.transpose() if (self.goal_observation.shape[0] == 3 or self.goal_observation.shape[0] == 4) else self.goal_observation
+            desired_goal = self.goal_observation.transpose() if (self.goal_observation.shape[0] != 3 and self.goal_observation.shape[0] != 4) else self.goal_observation
             achieved_goal = obs
         else:
             desired_goal = self.get_goal_location()
@@ -161,7 +161,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
         qvel[-2:] = 0
         self.set_state(qpos, qvel)
-        self.goal_observation = self.render(mode='rgb_array', depth=False).transpose()
+        self.goal_observation = self.render(mode='rgb_array', depth=False)
         qpos = self.np_random.uniform(low=-0.1, high=0.1, size=self.model.nq) + self.init_qpos
         qpos[-2:] = self.goal_state
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
@@ -179,7 +179,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
         qvel[-2:] = 0
         self.set_state(qpos, qvel)
-        self.goal_observation = self.render(mode='rgb_array', depth=False).transpose()
+        self.goal_observation = self.render(mode='rgb_array', depth=False)
         qpos = self.np_random.uniform(low=-0.1, high=0.1, size=self.model.nq) + self.init_qpos
         qpos[-2:] = self.goal_state
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
@@ -188,7 +188,7 @@ class ReacherEnv(GoalEnvExt, utils.EzPickle):
 
     def get_image(self, width=84, height=84, camera_name=None):
         assert width == height
-        image = self.render(mode='rgb_array', image_size=width, depth=False).transpose()
+        image = self.render(mode='rgb_array', image_size=width, depth=False)
         return image
 
     def get_diagnostics(self, paths, prefix=''):
